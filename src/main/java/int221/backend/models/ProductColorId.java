@@ -1,6 +1,5 @@
 package int221.backend.models;
 
-import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.io.Serializable;
 
@@ -8,4 +7,5 @@ import java.io.Serializable;
 public class ProductColorId implements Serializable {
     private int colorId;
     private String productCode;
+
 }

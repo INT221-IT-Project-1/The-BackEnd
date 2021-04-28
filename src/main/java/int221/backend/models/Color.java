@@ -1,8 +1,7 @@
 package int221.backend.models;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name="colors")
@@ -10,7 +9,6 @@ public class Color {
     @Id private int colorId;
     private String colorName;
     private String colorCode;
-
     public Color() {
     }
 

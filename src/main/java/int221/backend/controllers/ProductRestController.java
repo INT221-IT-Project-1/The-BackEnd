@@ -29,16 +29,6 @@ public class ProductRestController {
     ProductColorRepository productColorRepository;
     UploadService uploadService;
 
-    @GetMapping("/api/productcolors")
-    public List<ProductColor> retrieveAllProductColor(){
-        return productColorRepository.findAll();
-    }
-
-    @GetMapping("/api/show/{productCode}")
-    public Product showProduct(@PathVariable String productCode){
-        return productRepository.findById(productCode).orElse(null);
-    }
-
     @PostMapping("/api/uploadImage")
     public void uploadImage(@RequestParam("imageFile") MultipartFile imageFile){
         try{uploadService.saveImage(imageFile);}
@@ -57,11 +47,24 @@ public class ProductRestController {
         return uploadService.getAll();
     }
 
+    @GetMapping("/api/productcolors")
+    public List<ProductColor> retrieveAllProductColor(){
+        return productColorRepository.findAll();
+    }
+
+    @GetMapping("/api/productcolors/{productCode}")
+    public List<ProductColor> showProductColor(@PathVariable String productCode){
+        return productRepository.findById(productCode).orElse(null).getProductColor();
+    }
     @GetMapping("/api/products")
     public List<Product> retrieveAllProduct(){
         return productRepository.findAll();
     }
 
+    @GetMapping("/api/products/{productCode}")
+    public Product showProduct(@PathVariable String productCode){
+        return productRepository.findById(productCode).orElse(null);
+    }
 
     @PostMapping(path = "/api/create",consumes = "application/json",produces = "application/json")
     public RedirectView createProduct(@RequestBody Product product){

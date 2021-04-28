@@ -1,5 +1,7 @@
 package int221.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -15,9 +17,11 @@ public class Product {
     private String productName;
     private String productDes;
     private Double productPrice;
-    @OneToMany(mappedBy = "color",cascade = CascadeType.ALL,
-            orphanRemoval = false)
+    @JsonManagedReference
+    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL, targetEntity = ProductColor.class)
+    @MapsId("productCode")
     private List<ProductColor> productColor;
+
     public String getProductCode() {
         return productCode;
     }
