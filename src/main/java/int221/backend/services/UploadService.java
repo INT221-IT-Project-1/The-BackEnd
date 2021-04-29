@@ -1,38 +1,52 @@
 package int221.backend.services;
 
+import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.springframework.context.annotation.Bean;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Component;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.net.http.HttpHeaders;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class UploadService {
 
     public void saveImage(MultipartFile file) throws IOException {
-        String folder = "../resources/assets/";
+        String folder = "classpath:assets/";
         byte[] bytes = file.getBytes();
         Path path = Paths.get(folder + file.getOriginalFilename());
         Files.write(path,bytes);
     }
 
-    public Image get(String productCode) {
-        BufferedImage image = null;
+    public byte[] get(String productCode) {
+        byte[] data = null;
         try{
-            URL urlPath = new URL("../resources/assets/" + productCode +".jpg");
-            image = ImageIO.read(urlPath);
+            File file = ResourceUtils.getFile("classpath:assets/"+productCode+".jpg");
+            BufferedImage image = ImageIO.read(file);
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ImageIO.write(image,"jpg",bos);
+            data = bos.toByteArray();
         }
         catch (IOException e){
+            System.out.println(e.getMessage());
             System.out.println("Could not get Image file.");
         }
-        return image;
+        return data;
     }
 
     public List<Image> getAll() {

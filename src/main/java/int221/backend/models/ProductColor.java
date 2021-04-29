@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Entity
 @Table(name="productcolors")
 @IdClass(ProductColorId.class)
-@JsonIgnoreProperties(value = {"color"})
+//@JsonIgnoreProperties(value = {"color"})
 public class ProductColor {
     @Id
     @Column(name="colorId", nullable = false)

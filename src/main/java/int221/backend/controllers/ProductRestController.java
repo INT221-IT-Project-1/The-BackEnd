@@ -9,18 +9,27 @@ import int221.backend.repositories.ColorRepository;
 import int221.backend.repositories.ProductColorRepository;
 import int221.backend.repositories.ProductRepository;
 import int221.backend.services.UploadService;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Target;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-@CrossOrigin(origins = {"http://localhost:8081"})
+@CrossOrigin(origins = {"http://localhost:8081"},allowedHeaders = "*")
 @RestController
 public class ProductRestController {
 
@@ -32,7 +41,7 @@ public class ProductRestController {
     ColorRepository colorRepository;
     @Autowired
     ProductColorRepository productColorRepository;
-
+    @Autowired
     UploadService uploadService;
 
     @PostMapping("/api/uploadImage")
@@ -44,8 +53,8 @@ public class ProductRestController {
     }
 
     @GetMapping("/api/showImage/{productCode}")
-    public Image showImage(@PathVariable String productCode){
-        return uploadService.get(productCode);
+    public ResponseEntity<byte[]> showImage(@PathVariable String productCode){
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(uploadService.get(productCode));
     }
 
     @GetMapping("/api/showImages")
@@ -79,6 +88,7 @@ public class ProductRestController {
         }
         return colors;
     }
+
     @GetMapping("/api/products")
     public List<Product> retrieveAllProduct(){
         return productRepository.findAll();
