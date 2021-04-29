@@ -1,5 +1,7 @@
 package int221.backend.controllers;
 
+import int221.backend.models.Brand;
+import int221.backend.models.Color;
 import int221.backend.models.Product;
 import int221.backend.models.ProductColor;
 import int221.backend.repositories.BrandRepository;
@@ -14,6 +16,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -47,14 +50,25 @@ public class ProductRestController {
         return uploadService.getAll();
     }
 
+    @GetMapping("/api/colors")
+    public List<Color> retrieveAllColor(){return colorRepository.findAll();}
+
+    @GetMapping("/api/brands")
+    public List<Brand> retrieveAllBrand(){return brandRepository.findAll();}
+
     @GetMapping("/api/productcolors")
     public List<ProductColor> retrieveAllProductColor(){
         return productColorRepository.findAll();
     }
 
     @GetMapping("/api/productcolors/{productCode}")
-    public List<ProductColor> showProductColor(@PathVariable String productCode){
-        return productRepository.findById(productCode).orElse(null).getProductColor();
+    public List<Color> showProductColor(@PathVariable String productCode){
+        List<Color> colors = new ArrayList<>();
+        List<ProductColor> productColors = productRepository.findById(productCode).orElse(null).getProductColor();
+        for (ProductColor temp : productColors){
+            colors.add(temp.getColor());
+        }
+        return colors;
     }
     @GetMapping("/api/products")
     public List<Product> retrieveAllProduct(){
