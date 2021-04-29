@@ -16,9 +16,11 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import java.awt.*;
 import java.io.IOException;
+import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.List;
 
+@CrossOrigin(origins = {"http://localhost:8081"})
 @RestController
 public class ProductRestController {
 
@@ -30,6 +32,7 @@ public class ProductRestController {
     ColorRepository colorRepository;
     @Autowired
     ProductColorRepository productColorRepository;
+
     UploadService uploadService;
 
     @PostMapping("/api/uploadImage")
