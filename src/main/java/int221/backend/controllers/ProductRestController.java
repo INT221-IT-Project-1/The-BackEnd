@@ -53,8 +53,14 @@ public class ProductRestController {
     @GetMapping("/api/colors")
     public List<Color> retrieveAllColor(){return colorRepository.findAll();}
 
+    @GetMapping("/api/colors/{colorId}")
+    public Color getColor(@PathVariable int colorId){return colorRepository.findById(colorId).orElse(null);}
+
     @GetMapping("/api/brands")
     public List<Brand> retrieveAllBrand(){return brandRepository.findAll();}
+
+    @GetMapping("/api/brands/{brandName}")
+    public Brand getBrand(@PathVariable String brandName){return brandRepository.findById(brandName).orElse(null);}
 
     @GetMapping("/api/productcolors")
     public List<ProductColor> retrieveAllProductColor(){
