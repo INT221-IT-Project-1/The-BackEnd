@@ -18,8 +18,7 @@ public class UploadService {
 
     public void saveImage(MultipartFile file) throws IOException {
         /* way 1 */
-        String folder = new File(".").getCanonicalPath();
-        folder = new File(".").getCanonicalPath() + "/src/main/resources/assets/";
+        String folder = new File(".").getCanonicalPath() + "/src/main/resources/storage/product-storage/";
         byte[] bytes = file.getBytes();
         FileOutputStream outputStream = new FileOutputStream(folder + file.getOriginalFilename());
         outputStream.write(bytes);
@@ -52,7 +51,8 @@ public class UploadService {
     public byte[] get(String productCode) {
         byte[] data = null;
         try{
-            File file = ResourceUtils.getFile("classpath:assets/"+productCode+".jpg");
+            String folder = new File(".").getCanonicalPath() + "/src/main/resources/storage/product-storage/";
+            File file = ResourceUtils.getFile(folder + productCode+".jpg");
             BufferedImage image = ImageIO.read(file);
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             ImageIO.write(image,imageFilter.getExtension(file),bos);
