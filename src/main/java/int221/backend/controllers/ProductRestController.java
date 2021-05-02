@@ -45,7 +45,7 @@ public class ProductRestController {
     UploadService uploadService;
 
     @PostMapping("/api/uploadImage")
-    public void uploadImage(@RequestParam("imageFile") MultipartFile imageFile){
+    public void uploadImage(@RequestParam("image-file") MultipartFile imageFile){
         try{uploadService.saveImage(imageFile);}
         catch (IOException e){
             System.out.println(e.getMessage());

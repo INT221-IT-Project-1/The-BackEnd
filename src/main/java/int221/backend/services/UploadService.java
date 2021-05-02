@@ -1,34 +1,52 @@
 package int221.backend.services;
 
-import org.apache.tomcat.util.http.fileupload.IOUtils;
-import org.springframework.context.annotation.Bean;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.io.*;
-import java.net.URL;
-import java.net.http.HttpHeaders;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 
 @Component
 public class UploadService {
     final private ImageFilter imageFilter = new ImageFilter();
 
     public void saveImage(MultipartFile file) throws IOException {
-        String folder = "classpath:assets/";
+        /* way 1 */
+        String folder = new File(".").getCanonicalPath();
+        folder = new File(".").getCanonicalPath() + "/src/main/resources/assets/";
         byte[] bytes = file.getBytes();
-        Path path = Paths.get(folder + file.getOriginalFilename());
-        Files.write(path,bytes);
+        FileOutputStream outputStream = new FileOutputStream(folder + file.getOriginalFilename());
+        outputStream.write(bytes);
+        /* way 2 */
+//        File folder = ResourceUtils.getFile("classpath:assets/");
+//        InputStream inputStream = null;
+//        OutputStream outputStream = null;
+//        String fileName = file.getOriginalFilename();
+//        File newFile = new File(folder + fileName);
+//
+//        try {
+//            inputStream = file.getInputStream();
+//
+//            if (!newFile.exists()) {
+//                newFile.createNewFile();
+//            }
+//            outputStream = new FileOutputStream(newFile);
+//            int read = 0;
+//            byte[] bytes = new byte[1024];
+//
+//            while ((read = inputStream.read(bytes)) != -1) {
+//                outputStream.write(bytes, 0, read);
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        /* way 3 (my way)*/
     }
 
     public byte[] get(String productCode) {
