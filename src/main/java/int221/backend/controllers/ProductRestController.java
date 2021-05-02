@@ -57,10 +57,10 @@ public class ProductRestController {
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(uploadService.get(productCode));
     }
 
-    @GetMapping("/api/showImages")
-    public List<Image> retrieveAllImageProduct(){
-        return uploadService.getAll();
-    }
+//    @GetMapping("/api/showImages")
+//    public ResponseEntity<List<byte[]>> retrieveAllImageProduct(){
+//        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(uploadService.getAll());
+//    }
 
     @GetMapping("/api/colors")
     public List<Color> retrieveAllColor(){return colorRepository.findAll();}

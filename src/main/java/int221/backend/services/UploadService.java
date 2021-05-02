@@ -11,10 +11,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.net.http.HttpHeaders;
 import java.nio.file.Files;
@@ -25,6 +22,7 @@ import java.util.List;
 
 @Component
 public class UploadService {
+    final private ImageFilter imageFilter = new ImageFilter();
 
     public void saveImage(MultipartFile file) throws IOException {
         String folder = "classpath:assets/";
@@ -39,7 +37,7 @@ public class UploadService {
             File file = ResourceUtils.getFile("classpath:assets/"+productCode+".jpg");
             BufferedImage image = ImageIO.read(file);
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            ImageIO.write(image,"jpg",bos);
+            ImageIO.write(image,imageFilter.getExtension(file),bos);
             data = bos.toByteArray();
         }
         catch (IOException e){
@@ -49,54 +47,28 @@ public class UploadService {
         return data;
     }
 
-    public List<Image> getAll() {
-        List<Image> list = new ArrayList<>();
-        class ImageFilter{
-            final String GIF = "gif";
-            final String PNG = "png";
-            final String JPG = "jpg";
-            final String BMP = "bmp";
-            final String JPEG = "jpeg";
-
-            public boolean accept(File file) {
-                if(file != null) {
-                    if(file.isDirectory())
-                        return false;
-                    String extension = getExtension(file);
-                    if(extension != null && isSupported(extension))
-                        return true;
-                }
-                return false;
-            }
-
-            private String getExtension(File file) {
-                if(file != null) {
-                    String filename = file.getName();
-                    int dot = filename.lastIndexOf('.');
-                    if(dot > 0 && dot < filename.length()-1)
-                        return filename.substring(dot+1).toLowerCase();
-                }
-                return null;
-            }
-
-            private boolean isSupported(String ext) {
-                return ext.equalsIgnoreCase(GIF) || ext.equalsIgnoreCase(PNG) ||
-                        ext.equalsIgnoreCase(JPG) || ext.equalsIgnoreCase(BMP) ||
-                        ext.equalsIgnoreCase(JPEG);
-            }
-        }
-        final ImageFilter imageFilter = new ImageFilter();
-        final File dir = new File("../resources/assets");
-        for(final File imgFile : dir.listFiles()) {
-            if(imageFilter.accept(imgFile)){
-                try {
-                    BufferedImage temp = ImageIO.read(imgFile);
-                    list.add(temp);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return list;
-    }
+//    public List<byte[]> getAll() {
+//        List<byte[]> list = new ArrayList<>();
+//        byte[] data = null;
+//        File dir = null;
+//        try {
+//            dir = ResourceUtils.getFile("classpath:assets/");
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//        for(final File imgFile : dir.listFiles()) {
+//            if(imageFilter.accept(imgFile)){
+//                try {
+//                    BufferedImage temp = ImageIO.read(imgFile);
+//                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//                    ImageIO.write(temp,imageFilter.getExtension(imgFile),bos);
+//                    data = bos.toByteArray();
+//                    list.add(data);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+//        return list;
+//    }
 }
