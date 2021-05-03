@@ -101,8 +101,22 @@ public class ProductRestController {
 
     @PostMapping(path = "/api/create",consumes = "application/json",produces = "application/json")
     public RedirectView createProduct(@RequestBody Product product){
-        productRepository.save(product);
-        return new RedirectView("/api/show/" + product.getProductCode());
+        int count = productRepository.findAll().size() + 1;
+        String productCode = "p00" + count;
+        System.out.println(productCode);
+        Brand tempBrand = brandRepository.findById(product.getProductBrand().getBrandName()).orElse(null);
+        Product temp = new Product();
+        temp.setProductCode(productCode);
+        temp.setProductDate(product.getProductDate());
+        temp.setProductBrand(tempBrand);
+        temp.setProductColor(product.getProductColor());
+        temp.setProductDes(product.getProductDes());
+        temp.setProductName(product.getProductName());
+        temp.setProductPrice(product.getProductPrice());
+        temp.setProductWarranty(product.getProductWarranty());
+        System.out.println(temp.toString());
+//        productRepository.save(temp);
+        return new RedirectView("http://localhost:8080/api/products/" + temp.getProductCode());
     }
 }
 
