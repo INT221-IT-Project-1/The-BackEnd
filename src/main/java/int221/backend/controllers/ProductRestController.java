@@ -111,16 +111,19 @@ public class ProductRestController {
         temp.setProductCode(productCode);
         temp.setProductDate(requestProductObject.getProductDate());
         temp.setProductBrand(tempBrand);
-        temp.setProductColor(null);
+//        temp.setProductColor(null);
         temp.setProductDes(requestProductObject.getProductDes());
         temp.setProductName(requestProductObject.getProductName());
         temp.setProductPrice(requestProductObject.getProductPrice());
         temp.setProductWarranty(requestProductObject.getProductWarranty());
         System.out.println(requestProductObject.getProductName());
+        System.out.println(temp.getProductBrand().getBrandName());
         System.out.println(requestProductObject.getProductDate());
         System.out.println(requestProductObject.getProductDes());
         System.out.println(requestProductObject.getProductPrice());
         for(int i = 0 ; i < requestProductObject.getProductColor().size() ; i++){
+//            ProductColor setProductColor = new ProductColor(tempProductColor.get(i).getColorId(),productCode);
+//            productColorRepository.save(setProductColor);
             System.out.println("Color" + i + " : " + tempProductColor.get(i).getColorName());
         }
         System.out.println(requestProductObject.getProductWarranty());
@@ -129,5 +132,26 @@ public class ProductRestController {
 //        productRepository.save(temp);
         return new RedirectView("http://localhost:8080/api/products/" + temp.getProductCode());
     }
+
+    @PutMapping("/api/editproduct/{productCode}")
+    public void editProduct(@PathVariable String productCode,@RequestBody RequestProductObject requestProductObject){
+        Product gettingProduct = productRepository.findById(productCode).orElse(null);
+        if(gettingProduct != null){
+            Brand tempBrand = brandRepository.findById(requestProductObject.getProductBrand()).orElse(null);
+            List<ProductColor> tempProductColor = productColorRepository.findProductColorsByProductCode(productCode);
+            List<Color> tempColor = requestProductObject.getProductColor();
+            List<Color> colorFromTemplate = colorRepository.findAll();
+            gettingProduct.setProductName(requestProductObject.getProductName());
+            gettingProduct.setProductPrice(requestProductObject.getProductPrice());
+            gettingProduct.setProductWarranty(requestProductObject.getProductWarranty());
+            gettingProduct.setProductDate(requestProductObject.getProductDate());
+            gettingProduct.setProductBrand(tempBrand);
+            for(int i = 0 ; i < tempProductColor.size() ; i++){
+//                if(tempColor.get(i) ==
+//
+            }
+        }
+    }
+
 }
 
