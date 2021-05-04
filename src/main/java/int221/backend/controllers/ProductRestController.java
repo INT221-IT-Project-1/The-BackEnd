@@ -8,6 +8,7 @@ import int221.backend.repositories.BrandRepository;
 import int221.backend.repositories.ColorRepository;
 import int221.backend.repositories.ProductColorRepository;
 import int221.backend.repositories.ProductRepository;
+import int221.backend.services.RequestProductObject;
 import int221.backend.services.UploadService;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,20 +101,30 @@ public class ProductRestController {
     }
 
     @PostMapping(path = "/api/create",consumes = "application/json",produces = "application/json")
-    public RedirectView createProduct(@RequestBody Product product){
+    public RedirectView createProduct(@RequestBody RequestProductObject requestProductObject){
         int count = productRepository.findAll().size() + 1;
         String productCode = "p00" + count;
         System.out.println(productCode);
-        Brand tempBrand = brandRepository.findById(product.getProductBrand().getBrandName()).orElse(null);
+        Brand tempBrand = brandRepository.findById(requestProductObject.getProductBrand()).orElse(null);
         Product temp = new Product();
+        List<Color> tempProductColor = requestProductObject.getProductColor();
         temp.setProductCode(productCode);
-        temp.setProductDate(product.getProductDate());
+        temp.setProductDate(requestProductObject.getProductDate());
         temp.setProductBrand(tempBrand);
-        temp.setProductColor(product.getProductColor());
-        temp.setProductDes(product.getProductDes());
-        temp.setProductName(product.getProductName());
-        temp.setProductPrice(product.getProductPrice());
-        temp.setProductWarranty(product.getProductWarranty());
+        temp.setProductColor(null);
+        temp.setProductDes(requestProductObject.getProductDes());
+        temp.setProductName(requestProductObject.getProductName());
+        temp.setProductPrice(requestProductObject.getProductPrice());
+        temp.setProductWarranty(requestProductObject.getProductWarranty());
+        System.out.println(requestProductObject.getProductName());
+        System.out.println(requestProductObject.getProductDate());
+        System.out.println(requestProductObject.getProductDes());
+        System.out.println(requestProductObject.getProductPrice());
+        for(int i = 0 ; i < requestProductObject.getProductColor().size() ; i++){
+            System.out.println("Color" + i + " : " + tempProductColor.get(i).getColorName());
+        }
+        System.out.println(requestProductObject.getProductWarranty());
+//        System.out.println(requestProductObject.getProductFile().getOriginalFilename());
         System.out.println(temp.toString());
 //        productRepository.save(temp);
         return new RedirectView("http://localhost:8080/api/products/" + temp.getProductCode());
