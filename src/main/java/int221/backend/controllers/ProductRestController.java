@@ -46,8 +46,8 @@ public class ProductRestController {
     UploadService uploadService;
 
     @PostMapping("/api/uploadImage")
-    public void uploadImage(@RequestParam("image-file") MultipartFile imageFile){
-        try{uploadService.saveImage(imageFile);}
+    public void uploadImage(@RequestParam("image-file") MultipartFile imageFile,String productCode){
+        try{uploadService.saveImage(imageFile,productCode);}
         catch (IOException e){
             System.out.println(e.getMessage());
         }
@@ -100,8 +100,8 @@ public class ProductRestController {
         return productRepository.findById(productCode).orElse(null);
     }
 
-    @PostMapping(path = "/api/create",consumes = "application/json",produces = "application/json")
-    public void createProduct(@RequestBody RequestProductObject requestProductObject){
+    @PostMapping(path = "/api/create",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public void createProduct(@RequestPart("product") RequestProductObject requestProductObject,@RequestParam("file") MultipartFile file){
         int count = productRepository.findAll().size() + 1;
         String productCode = "p00" + count;
         System.out.println(productCode);
@@ -127,29 +127,30 @@ public class ProductRestController {
             System.out.println("Color " + i + " : " + tempProductColor.get(i).getColorName());
         }
         System.out.println(requestProductObject.getProductWarranty());
-//        System.out.println(requestProductObject.getProductFile().getOriginalFilename());
+        System.out.println(file.getOriginalFilename());
+//        uploadImage(file,temp.getProductCode());
         System.out.println(temp.toString());
         temp.setProductColor(addingProductColor);
         productRepository.save(temp);
     }
 
     @PutMapping("/api/editproduct/{productCode}")
-    public void editProduct(@PathVariable String productCode,@RequestBody RequestProductObject requestProductObject){
+    public void editProduct(@PathVariable String productCode,@RequestPart("editingProduct") RequestProductObject requestProductObject,@RequestParam("file") MultipartFile file){
         Product gettingProduct = productRepository.findById(productCode).orElse(null);
         if(gettingProduct != null){
             Brand tempBrand = brandRepository.findById(requestProductObject.getProductBrand()).orElse(null);
-            List<ProductColor> tempProductColor = productColorRepository.findProductColorsByProductCode(productCode);
             List<Color> tempColor = requestProductObject.getProductColor();
-            List<Color> colorFromTemplate = colorRepository.findAll();
             gettingProduct.setProductName(requestProductObject.getProductName());
             gettingProduct.setProductPrice(requestProductObject.getProductPrice());
             gettingProduct.setProductWarranty(requestProductObject.getProductWarranty());
             gettingProduct.setProductDate(requestProductObject.getProductDate());
             gettingProduct.setProductBrand(tempBrand);
-            for(int i = 0 ; i < tempProductColor.size() ; i++){
-//                if(tempColor.get(i) ==
-//
+            List<ProductColor> addingProductColor = new ArrayList<>();
+            for(int i = 0 ; i < tempColor.size() ; i++){
+                ProductColor setProductColor = new ProductColor(tempColor.get(i).getColorId(),productCode);
+                addingProductColor.add(setProductColor);
             }
+            gettingProduct.setProductColor(addingProductColor);
         }
     }
 

@@ -17,7 +17,6 @@ public class RequestProductObject {
     private Double productPrice;
     private Date productDate;
     private String productWarranty;
-    private MultipartFile productFile;
     private List<Color> productColor;
 
     public String getProductCode() {
@@ -74,14 +73,6 @@ public class RequestProductObject {
 
     public void setProductWarranty(String productWarranty) {
         this.productWarranty = productWarranty;
-    }
-
-    public MultipartFile getProductFile() {
-        return productFile;
-    }
-
-    public void setProductFile(MultipartFile productFile) {
-        this.productFile = productFile;
     }
 
     public List<Color> getProductColor() {

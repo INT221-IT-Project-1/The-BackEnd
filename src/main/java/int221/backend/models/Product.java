@@ -1,5 +1,6 @@
 package int221.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -18,6 +19,8 @@ public class Product {
     private String productName;
     private String productDes;
     private Double productPrice;
+    @Temporal(TemporalType.DATE)
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date productDate;
     private String productWarranty;
     @JsonManagedReference

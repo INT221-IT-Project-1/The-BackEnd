@@ -16,11 +16,11 @@ import java.nio.file.Paths;
 public class UploadService {
     final private ImageFilter imageFilter = new ImageFilter();
 
-    public void saveImage(MultipartFile file) throws IOException {
+    public void saveImage(MultipartFile file,String productCode) throws IOException {
         /* way 1 */
         String folder = new File(".").getCanonicalPath() + "/src/main/resources/storage/product-storage/";
         byte[] bytes = file.getBytes();
-        FileOutputStream outputStream = new FileOutputStream(folder + file.getOriginalFilename());
+        FileOutputStream outputStream = new FileOutputStream(folder + productCode);
         outputStream.write(bytes);
         /* way 2 */
 //        File folder = ResourceUtils.getFile("classpath:assets/");
