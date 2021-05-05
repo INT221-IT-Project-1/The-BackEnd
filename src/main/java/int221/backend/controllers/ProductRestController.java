@@ -101,7 +101,7 @@ public class ProductRestController {
     }
 
     @PostMapping(path = "/api/create",consumes = "application/json",produces = "application/json")
-    public RedirectView createProduct(@RequestBody RequestProductObject requestProductObject){
+    public void createProduct(@RequestBody RequestProductObject requestProductObject){
         int count = productRepository.findAll().size() + 1;
         String productCode = "p00" + count;
         System.out.println(productCode);
@@ -111,7 +111,6 @@ public class ProductRestController {
         temp.setProductCode(productCode);
         temp.setProductDate(requestProductObject.getProductDate());
         temp.setProductBrand(tempBrand);
-//        temp.setProductColor(null);
         temp.setProductDes(requestProductObject.getProductDes());
         temp.setProductName(requestProductObject.getProductName());
         temp.setProductPrice(requestProductObject.getProductPrice());
@@ -121,16 +120,17 @@ public class ProductRestController {
         System.out.println(requestProductObject.getProductDate());
         System.out.println(requestProductObject.getProductDes());
         System.out.println(requestProductObject.getProductPrice());
+        List<ProductColor> addingProductColor = new ArrayList<>();
         for(int i = 0 ; i < requestProductObject.getProductColor().size() ; i++){
-//            ProductColor setProductColor = new ProductColor(tempProductColor.get(i).getColorId(),productCode);
-//            productColorRepository.save(setProductColor);
-            System.out.println("Color" + i + " : " + tempProductColor.get(i).getColorName());
+            ProductColor setProductColor = new ProductColor(tempProductColor.get(i).getColorId(),productCode);
+            addingProductColor.add(setProductColor);
+            System.out.println("Color " + i + " : " + tempProductColor.get(i).getColorName());
         }
         System.out.println(requestProductObject.getProductWarranty());
 //        System.out.println(requestProductObject.getProductFile().getOriginalFilename());
         System.out.println(temp.toString());
-//        productRepository.save(temp);
-        return new RedirectView("http://localhost:8080/api/products/" + temp.getProductCode());
+        temp.setProductColor(addingProductColor);
+        productRepository.save(temp);
     }
 
     @PutMapping("/api/editproduct/{productCode}")

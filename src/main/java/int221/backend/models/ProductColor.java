@@ -2,6 +2,7 @@ package int221.backend.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
@@ -10,11 +11,14 @@ import javax.persistence.*;
 @IdClass(ProductColorId.class)
 //@JsonIgnoreProperties(value = {"color"})
 public class ProductColor {
+
     @Id
     @Column(name="colorId", nullable = false)
     private int colorId;
+
     @Column(name="productCode",nullable = false)
-    @Id private String productCode;
+    @Id
+    private String productCode;
 
     @ManyToOne
     @MapsId("colorId")
@@ -49,6 +53,8 @@ public class ProductColor {
     public Color getColor() {
         return color;
     }
+
+    public void setColor(Color color){this.color = color;}
 
     public void setProductCode(String productCode) {
         this.productCode = productCode;

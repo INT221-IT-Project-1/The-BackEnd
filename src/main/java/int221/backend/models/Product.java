@@ -1,6 +1,7 @@
 package int221.backend.models;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -10,7 +11,6 @@ import java.util.List;
 @Table(name= "products")
 public class Product {
     @Id
-    @GeneratedValue
     private String productCode;
     @ManyToOne
     @JoinColumn(name="productBrand")
