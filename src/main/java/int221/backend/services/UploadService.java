@@ -20,7 +20,7 @@ public class UploadService {
         /* way 1 */
         String folder = new File(".").getCanonicalPath() + "/src/main/resources/storage/product-storage/";
         byte[] bytes = file.getBytes();
-        FileOutputStream outputStream = new FileOutputStream(folder + productCode);
+        FileOutputStream outputStream = new FileOutputStream(folder + productCode + ".jpg");
         outputStream.write(bytes);
         /* way 2 */
 //        File folder = ResourceUtils.getFile("classpath:assets/");

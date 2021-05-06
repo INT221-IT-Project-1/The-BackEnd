@@ -10,8 +10,10 @@ import int221.backend.repositories.ProductColorRepository;
 import int221.backend.repositories.ProductRepository;
 import int221.backend.services.RequestProductObject;
 import int221.backend.services.UploadService;
+import jdk.jfr.ContentType;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -19,8 +21,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.servlet.MultipartConfigElement;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
 import java.io.IOException;
@@ -44,6 +51,7 @@ public class ProductRestController {
     ProductColorRepository productColorRepository;
     @Autowired
     UploadService uploadService;
+
 
     @PostMapping("/api/uploadImage")
     public void uploadImage(@RequestParam("image-file") MultipartFile imageFile,String productCode){
@@ -101,7 +109,7 @@ public class ProductRestController {
     }
 
     @PostMapping(path = "/api/create",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public void createProduct(@RequestPart("product") RequestProductObject requestProductObject,@RequestParam("file") MultipartFile file){
+    public void createProduct( @RequestPart("newProduct") RequestProductObject requestProductObject, @RequestParam("file-image") MultipartFile file){
         int count = productRepository.findAll().size() + 1;
         String productCode = "p00" + count;
         System.out.println(productCode);
@@ -128,14 +136,14 @@ public class ProductRestController {
         }
         System.out.println(requestProductObject.getProductWarranty());
         System.out.println(file.getOriginalFilename());
-//        uploadImage(file,temp.getProductCode());
+        uploadImage(file,temp.getProductCode());
         System.out.println(temp.toString());
         temp.setProductColor(addingProductColor);
         productRepository.save(temp);
     }
 
     @PutMapping("/api/editproduct/{productCode}")
-    public void editProduct(@PathVariable String productCode,@RequestPart("editingProduct") RequestProductObject requestProductObject,@RequestParam("file") MultipartFile file){
+    public void editProduct(@PathVariable String productCode,@RequestPart("editingProduct") RequestProductObject requestProductObject,@RequestParam("file-image") MultipartFile file){
         Product gettingProduct = productRepository.findById(productCode).orElse(null);
         if(gettingProduct != null){
             Brand tempBrand = brandRepository.findById(requestProductObject.getProductBrand()).orElse(null);
