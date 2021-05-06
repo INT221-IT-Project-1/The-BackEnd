@@ -142,7 +142,7 @@ public class ProductRestController {
         productRepository.save(temp);
     }
 
-    @PutMapping("/api/editproduct/{productCode}")
+    @PutMapping(path = "/api/editproduct/{productCode}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public void editProduct(@PathVariable String productCode,@RequestPart("editingProduct") RequestProductObject requestProductObject,@RequestParam("file-image") MultipartFile file){
         Product gettingProduct = productRepository.findById(productCode).orElse(null);
         if(gettingProduct != null){
@@ -159,6 +159,7 @@ public class ProductRestController {
                 addingProductColor.add(setProductColor);
             }
             gettingProduct.setProductColor(addingProductColor);
+            uploadImage(file,gettingProduct.getProductCode());
         }
     }
 
