@@ -1,11 +1,14 @@
 package int221.backend.services;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
@@ -65,6 +68,35 @@ public class UploadService {
         return data;
     }
 
+    public Resource getImage(String productCode){
+//        Image image = null;
+        Resource resource = null;
+        try {
+            String folder = new File(".").getCanonicalPath() + "/src/main/resources/storage/product-storage/";
+            Path path = Paths.get(folder + productCode +".jpg");
+            System.out.println(path.getFileName());
+//            File file = ResourceUtils.getFile(folder + productCode + ".jpg");
+//            image = ImageIO.read(file);
+            resource = new UrlResource(path.toUri());
+        }
+        catch (IOException e){
+            System.out.println(e.getMessage());
+            System.out.println("Could not get Image file.");
+        }
+        return resource;
+    }
+
+    public void deleteImage(String productCode){
+        try{
+            String folder = new File(".").getCanonicalPath() + "/src/main/resources/storage/product-storage/";
+            File file = ResourceUtils.getFile(folder + productCode+".jpg");
+            file.delete();
+        }
+        catch (IOException e){
+            System.out.println(e.getMessage());
+            System.out.println("Could not delete Image file.");
+        }
+    }
 //    public List<byte[]> getAll() {
 //        List<byte[]> list = new ArrayList<>();
 //        byte[] data = null;

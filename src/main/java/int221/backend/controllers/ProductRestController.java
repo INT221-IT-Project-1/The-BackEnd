@@ -1,5 +1,6 @@
 package int221.backend.controllers;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
 import int221.backend.models.Brand;
 import int221.backend.models.Color;
 import int221.backend.models.Product;
@@ -30,6 +31,7 @@ import javax.servlet.MultipartConfigElement;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Target;
@@ -61,11 +63,15 @@ public class ProductRestController {
         }
     }
 
-    @GetMapping("/api/showImage/{productCode}")
+    @GetMapping(path = "/api/showImage/{productCode}")
     public ResponseEntity<byte[]> showImage(@PathVariable String productCode){
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(uploadService.get(productCode));
     }
 
+    @GetMapping("/api/getImageSource/{productCode}")
+    public ResponseEntity<Resource> getImageSource(@PathVariable String productCode){
+        return ResponseEntity.ok().body(uploadService.getImage(productCode));
+    }
 //    @GetMapping("/api/showImages")
 //    public ResponseEntity<List<byte[]>> retrieveAllImageProduct(){
 //        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(uploadService.getAll());
@@ -110,9 +116,25 @@ public class ProductRestController {
 
     @PostMapping(path = "/api/create",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public void createProduct( @RequestPart("newProduct") RequestProductObject requestProductObject, @RequestParam("file-image") MultipartFile file){
-        int count = productRepository.findAll().size() + 1;
-        String productCode = "p00" + count;
-        System.out.println(productCode);
+        /* new way to generate product code */
+        List<Product> getAllProduct = productRepository.findAll();
+        String lastestProductCode = getAllProduct.get(getAllProduct.size() - 1).getProductCode();
+        System.out.println("lastest Product Code : "+ lastestProductCode);
+        int tempCount = Integer.parseInt(lastestProductCode.substring(1)) + 1;
+        String productCode;
+        if(tempCount < 10) {
+            productCode = "p00" + tempCount;
+        }
+        else if(tempCount < 100) {
+            productCode = "p0" + tempCount;
+        }
+        else {
+            productCode = "p" + tempCount;
+        }
+        /* old way to generate product code */
+//        int count = productRepository.findAll().size() + 1;
+//        String productCode = "p00" + count;
+        System.out.println("newest product code : " + productCode);
         Brand tempBrand = brandRepository.findById(requestProductObject.getProductBrand()).orElse(null);
         Product temp = new Product();
         List<Color> tempProductColor = requestProductObject.getProductColor();
@@ -143,7 +165,7 @@ public class ProductRestController {
     }
 
     @PutMapping(path = "/api/editproduct/{productCode}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public void editProduct(@PathVariable String productCode,@RequestPart("editingProduct") RequestProductObject requestProductObject,@RequestParam("file-image") MultipartFile file){
+    public void editProduct(@PathVariable String productCode,@RequestPart("editingProduct") RequestProductObject requestProductObject,@RequestParam(value = "file-image",required = false) MultipartFile file){
         Product gettingProduct = productRepository.findById(productCode).orElse(null);
         if(gettingProduct != null){
             Brand tempBrand = brandRepository.findById(requestProductObject.getProductBrand()).orElse(null);
@@ -159,8 +181,16 @@ public class ProductRestController {
                 addingProductColor.add(setProductColor);
             }
             gettingProduct.setProductColor(addingProductColor);
-            uploadImage(file,gettingProduct.getProductCode());
+            if(file != null) {
+                uploadImage(file, gettingProduct.getProductCode());
+            }
         }
+    }
+    @DeleteMapping("/api/deleteproduct/{productCode}")
+    public void deleteProduct(@PathVariable String productCode){
+        productColorRepository.deleteProductColorsByProductCode(productCode);
+        productRepository.deleteById(productCode);
+        uploadService.deleteImage(productCode);
     }
 
 }
