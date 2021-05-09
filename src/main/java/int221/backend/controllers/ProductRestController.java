@@ -176,18 +176,21 @@ public class ProductRestController {
             gettingProduct.setProductWarranty(requestProductObject.getProductWarranty());
             gettingProduct.setProductDate(requestProductObject.getProductDate());
             gettingProduct.setProductBrand(tempBrand);
-            List<ProductColor> addingProductColor = new ArrayList<>();
-            for(int i = 0 ; i < tempColor.size() ; i++){
-                ProductColor setProductColor = new ProductColor(tempColor.get(i).getColorId(),productCode);
-                System.out.println("Color " + i + " : " + tempColor.get(i).getColorName());
-                addingProductColor.add(setProductColor);
+            if(tempColor != null) {
+                List<ProductColor> addingProductColor = new ArrayList<>();
+            productColorRepository.deleteProductColorsByProductCode(productCode);
+                for (int i = 0; i < tempColor.size(); i++) {
+                        ProductColor setProductColor = new ProductColor(tempColor.get(i).getColorId(), productCode);
+                        System.out.println("Color " + i + " : " + tempColor.get(i).getColorName());
+                        addingProductColor.add(setProductColor);
+                }
+                gettingProduct.setProductColor(addingProductColor);
             }
             System.out.println(requestProductObject.getProductName());
             System.out.println(tempBrand.getBrandName());
             System.out.println(requestProductObject.getProductDate());
             System.out.println(requestProductObject.getProductDes());
             System.out.println(requestProductObject.getProductPrice());
-            gettingProduct.setProductColor(addingProductColor);
             if(file != null) {
                 deleteProduct(gettingProduct.getProductCode());
                 uploadImage(file, gettingProduct.getProductCode());

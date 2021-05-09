@@ -8,9 +8,10 @@ import org.springframework.data.repository.query.Param;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 public interface ProductColorRepository extends JpaRepository<ProductColor,Integer> {
-    ProductColor findProductColorByColorId(int colorId);
+    Optional<ProductColor> findProductColorByColorIdAndProductCode(int colorId, String productCode);
     List<ProductColor> findProductColorsByProductCode(String productCode);
     @Transactional
     @Modifying
