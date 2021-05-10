@@ -23,7 +23,9 @@ public class UploadService {
         /* way 1 */
         String folder = new File(".").getCanonicalPath() + "/src/main/resources/storage/product-storage/";
         byte[] bytes = file.getBytes();
-        FileOutputStream outputStream = new FileOutputStream(folder + productCode + ".jpg");
+        String extension = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+//        System.out.println(extension);
+        FileOutputStream outputStream = new FileOutputStream(folder + productCode + extension);
         outputStream.write(bytes);
         /* way 2 */
 //        File folder = ResourceUtils.getFile("classpath:assets/");
@@ -53,9 +55,11 @@ public class UploadService {
 
     public byte[] get(String productCode) {
         byte[] data = null;
+        File file = null;
         try{
-            String folder = new File(".").getCanonicalPath() + "/src/main/resources/storage/product-storage/";
-            File file = ResourceUtils.getFile(folder + productCode+".jpg");
+            file = getFile(productCode);
+//            File file = ResourceUtils.getFile(folder + productCode+".jpg");
+//            System.out.println(file.getName());
             BufferedImage image = ImageIO.read(file);
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             ImageIO.write(image,imageFilter.getExtension(file),bos);
@@ -71,9 +75,21 @@ public class UploadService {
     public Resource getImage(String productCode){
 //        Image image = null;
         Resource resource = null;
+        Path path = null;
         try {
             String folder = new File(".").getCanonicalPath() + "/src/main/resources/storage/product-storage/";
-            Path path = Paths.get(folder + productCode +".jpg");
+            File[] listOfFile = ResourceUtils.getFile(folder).listFiles();
+            if(listOfFile != null){
+                for(File temp : listOfFile){
+                    String extension = temp.getName().substring(temp.getName().lastIndexOf("."));
+//                    System.out.println("extension : " +extension);
+//                    System.out.println("product code + extension : " + productCode+extension);
+//                    System.out.println("temp.getName() : "  + temp.getName());
+                    if(temp.getName().equals(productCode+extension)){
+                        path = temp.toPath();
+                    }
+                }
+            }
             System.out.println(path.getFileName());
 //            File file = ResourceUtils.getFile(folder + productCode + ".jpg");
 //            image = ImageIO.read(file);
@@ -88,14 +104,31 @@ public class UploadService {
 
     public void deleteImage(String productCode){
         try{
-            String folder = new File(".").getCanonicalPath() + "/src/main/resources/storage/product-storage/";
-            File file = ResourceUtils.getFile(folder + productCode+".jpg");
+            File file = getFile(productCode);
             file.delete();
         }
         catch (IOException e){
             System.out.println(e.getMessage());
             System.out.println("Could not delete Image file.");
         }
+    }
+
+    private File getFile(String productCode) throws IOException {
+        File file = null;
+        String folder = new File(".").getCanonicalPath() + "/src/main/resources/storage/product-storage/";
+        File[] listOfFile = ResourceUtils.getFile(folder).listFiles();
+        if(listOfFile != null) {
+            for (File temp : listOfFile) {
+                String extension = temp.getName().substring(temp.getName().lastIndexOf("."));
+//                    System.out.println("extension : " +extension);
+//                    System.out.println("product code + extension : " + productCode+extension);
+//                    System.out.println("temp.getName() : "  + temp.getName());
+                if (temp.getName().equals(productCode + extension)) {
+                    file = temp;
+                }
+            }
+        }
+        return file;
     }
 //    public List<byte[]> getAll() {
 //        List<byte[]> list = new ArrayList<>();
