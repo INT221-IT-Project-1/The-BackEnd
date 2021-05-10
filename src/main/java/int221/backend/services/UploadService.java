@@ -1,5 +1,7 @@
 package int221.backend.services;
 
+import int221.backend.exceptions.ExceptionResponse;
+import int221.backend.exceptions.ImageHandlerException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -19,14 +21,20 @@ import java.nio.file.Paths;
 public class UploadService {
     final private ImageFilter imageFilter = new ImageFilter();
 
-    public void saveImage(MultipartFile file,String productCode) throws IOException {
+    public void saveImage(MultipartFile file,String productCode) {
         /* way 1 */
-        String folder = new File(".").getCanonicalPath() + "/src/main/resources/storage/product-storage/";
-        byte[] bytes = file.getBytes();
-        String extension = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+        try {
+            String folder = new File(".").getCanonicalPath() + "/src/main/resources/storage/product-storage/";
+            byte[] bytes = file.getBytes();
+            String extension = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
 //        System.out.println(extension);
-        FileOutputStream outputStream = new FileOutputStream(folder + productCode + extension);
-        outputStream.write(bytes);
+            FileOutputStream outputStream = new FileOutputStream(folder + productCode + extension);
+            outputStream.write(bytes);
+        }
+        catch (IOException e){
+            System.out.println(e.getMessage());
+            System.out.println("Could not save image.");
+        }
         /* way 2 */
 //        File folder = ResourceUtils.getFile("classpath:assets/");
 //        InputStream inputStream = null;
@@ -55,15 +63,18 @@ public class UploadService {
 
     public byte[] get(String productCode) {
         byte[] data = null;
-        File file = null;
         try{
-            file = getFile(productCode);
+            File file = getFile(productCode);
 //            File file = ResourceUtils.getFile(folder + productCode+".jpg");
 //            System.out.println(file.getName());
             BufferedImage image = ImageIO.read(file);
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             ImageIO.write(image,imageFilter.getExtension(file),bos);
             data = bos.toByteArray();
+        }
+        catch (ImageHandlerException e){
+            System.out.println(e.getMessage());
+            System.out.println(e.getErrorCode());
         }
         catch (IOException e){
             System.out.println(e.getMessage());
@@ -107,13 +118,17 @@ public class UploadService {
             File file = getFile(productCode);
             file.delete();
         }
+        catch (ImageHandlerException e){
+            System.out.println(e.getMessage());
+            System.out.println(e.getErrorCode());
+        }
         catch (IOException e){
             System.out.println(e.getMessage());
             System.out.println("Could not delete Image file.");
         }
     }
 
-    private File getFile(String productCode) throws IOException {
+    private File getFile(String productCode) throws ImageHandlerException,IOException {
         File file = null;
         String folder = new File(".").getCanonicalPath() + "/src/main/resources/storage/product-storage/";
         File[] listOfFile = ResourceUtils.getFile(folder).listFiles();
@@ -128,6 +143,7 @@ public class UploadService {
                 }
             }
         }
+        if(file == null) throw new ImageHandlerException("No such a file name "+ productCode,ExceptionResponse.ERROR_CODE.IMAGE_DOES_NOT_EXISTS);
         return file;
     }
 //    public List<byte[]> getAll() {
