@@ -39,7 +39,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-@CrossOrigin(origins = {"http://localhost:8081"},allowedHeaders = "*")
+@CrossOrigin(origins = {"http://13.70.2.117:8080"},allowedHeaders = "*")
 @RestController
 public class ProductRestController {
 
