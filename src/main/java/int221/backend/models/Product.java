@@ -20,7 +20,7 @@ public class Product {
     private String productDes;
     private Double productPrice;
     @Temporal(TemporalType.DATE)
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone = "UTC")
     private Date productDate;
     private String productWarranty;
     @JsonManagedReference
